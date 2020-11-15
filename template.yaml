@@ -1,0 +1,51 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: TgpsgThanhLeOnline
+
+Parameters:
+  StageEnv:
+    Type: String
+    Default: staging
+    AllowedValues:
+      - test
+      - development
+      - staging
+      - live
+
+Resources:
+  TgpsgThanhLeOnlineLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: lib/tgpsg_thanh_le_online.handler
+      Runtime: ruby2.7
+      Timeout: 60
+      MemorySize: 512
+      FunctionName: !Sub tgpsg-thanh-le-online-${StageEnv}
+      Environment:
+        Variables:
+          STAGE_ENV: !Ref StageEnv
+          RUBYOPT: "-W0"
+      Events:
+        TgpsgThanhLeOnlineHttpApiProxy:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref TgpsgThanhLeOnlineHttpApi
+
+  TgpsgThanhLeOnlineHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: !Ref StageEnv
+      Tags:
+        env: !Ref StageEnv
+        group: shared
+        application: tgpsg-thanh-le-online
+
+Outputs:
+  TgpsgThanhLeOnlineLambdaArn:
+    Description: Lambda Function Arn
+    Value: !GetAtt TgpsgThanhLeOnlineLambda.Arn
+
+  TgpsgThanhLeOnlineInvokeUrl:
+    Description: Lambda Invoke URL
+    Value: !Sub "https://${TgpsgThanhLeOnlineHttpApi}.execute-api.${AWS::Region}.amazonaws.com/${StageEnv}/api/masses/"
