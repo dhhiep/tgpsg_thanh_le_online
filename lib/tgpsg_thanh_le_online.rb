@@ -4,6 +4,8 @@ require 'json'
 require 'dotenv'
 require 'httparty'
 require 'aws-sdk-s3'
+require 'open-uri'
+require 'concurrent'
 
 require_relative './tgpsg_thanh_le_online/env'
 require_relative './tgpsg_thanh_le_online/mass'
