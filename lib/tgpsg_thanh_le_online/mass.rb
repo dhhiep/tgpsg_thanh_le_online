@@ -18,7 +18,10 @@ module TgpsgThanhLeOnline
             mass.streamed_videos,
           ]
 
-          videos.flatten.sort_by { |video| video[:timestamp] }.reverse
+          videos = videos.flatten
+          videos = videos.uniq { |video| video[:timestamp] }
+          videos = videos.sort_by { |video| video[:timestamp] }
+          videos.reverse
         end
       end
     end
