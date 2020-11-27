@@ -40,7 +40,9 @@ module TgpsgThanhLeOnline
               video_thumbnail = video_snippet.dig(:thumbnails, :high, :url)
               video_title = video_snippet[:title]
               video_event_type = video_snippet[:liveBroadcastContent]
-              video_published_at = video_published_date(video_url)
+              raw_content = video_raw_content(video_url)
+              video_published_at = video_published_at(raw_content)
+              video_ended_at = video_ended_at(raw_content)
 
               {
                 timestamp: video_published_at.to_i,
@@ -50,6 +52,7 @@ module TgpsgThanhLeOnline
                 title: video_title,
                 event_type: video_event_type,
                 published_at: video_published_at,
+                ended_at: video_ended_at,
               }
             end
           end
@@ -57,12 +60,23 @@ module TgpsgThanhLeOnline
         video_datum.map(&:value).sort_by { |video| video[:timestamp] }
       end
 
-      def video_published_date(url)
-        video_raw_content = URI.parse(url).read
-        publish_at = video_raw_content.match(/"startTimestamp":"(.*)\",\"endTimestamp\"/)
-        publish_at ||= video_raw_content.match(/"startTimestamp":"(.*)\"},\"uploadDate"/)
+      def video_published_at(raw_content)
+        published_at = raw_content.match(/"startTimestamp":"(.*)\",\"endTimestamp\"/)
+        published_at ||= raw_content.match(/"startTimestamp":"(.*)\"},\"uploadDate"/)
+        return unless published_at
 
-        Time.parse(publish_at[1]).getlocal('+07:00')
+        Time.parse(published_at[1]).getlocal('+07:00')
+      end
+
+      def video_ended_at(raw_content)
+        stream_ended_at = raw_content.match(/"endTimestamp":"(.*)\"},\"uploadDate"/)
+        return unless stream_ended_at
+
+        Time.parse(stream_ended_at[1]).getlocal('+07:00')
+      end
+
+      def video_raw_content(url)
+        URI.parse(url).read
       end
     end
   end
