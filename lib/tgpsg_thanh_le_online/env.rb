@@ -15,7 +15,7 @@ module TgpsgThanhLeOnline
     end
 
     def region
-      ENV['AWS_REGION'] || 'us-east-1'
+      ENV['AWS_REGION'] || 'ap-southeast-1'
     end
 
     extend self

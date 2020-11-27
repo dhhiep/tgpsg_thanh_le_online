@@ -6,7 +6,7 @@
     "httpMethod": "GET",
     "headers": {
       "Content-Length": "0",
-      "Host": "mw69qflegl.execute-api.us-east-1.amazonaws.com",
+      "Host": "mw69qflegl.execute-api.ap-southeast-1.amazonaws.com",
       "User-Agent": "curl/7.64.1",
       "X-Amzn-Trace-Id": "Root=1-5e6a24cc-0f7fddb60009c829de61bd46",
       "X-Forwarded-For": "72.218.219.201",
@@ -19,7 +19,7 @@
         "0"
       ],
       "Host": [
-        "mw69qflegl.execute-api.us-east-1.amazonaws.com"
+        "mw69qflegl.execute-api.ap-southeast-1.amazonaws.com"
       ],
       "User-Agent": [
         "curl/7.64.1"
@@ -45,7 +45,7 @@
     "requestContext": {
       "accountId": "831702759394",
       "apiId": "mw69qflegl",
-      "domainName": "mw69qflegl.execute-api.us-east-1.amazonaws.com",
+      "domainName": "mw69qflegl.execute-api.ap-southeast-1.amazonaws.com",
       "domainPrefix": "mw69qflegl",
       "extendedRequestId": "JRqv6gNzIAMEJMw=",
       "httpMethod": "GET",

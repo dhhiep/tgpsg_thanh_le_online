@@ -7,7 +7,7 @@ module TgpsgThanhLeOnline
         private
 
         def bucket_name
-          'giaoxutanphuoc'
+          'gxtanphuoc'
         end
       end
     end
