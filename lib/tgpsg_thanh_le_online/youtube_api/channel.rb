@@ -39,10 +39,10 @@ module TgpsgThanhLeOnline
               video_url = "https://www.youtube.com/watch?v=#{video_id}"
               video_thumbnail = video_snippet.dig(:thumbnails, :high, :url)
               video_title = video_snippet[:title]
-              video_event_type = video_snippet[:liveBroadcastContent]
               raw_content = video_raw_content(video_url)
               video_published_at = video_published_at(raw_content)
               video_ended_at = video_ended_at(raw_content)
+              video_event_type = video_ended_at ? 'streamed' : 'upcoming'
 
               {
                 timestamp: video_published_at.to_i,
