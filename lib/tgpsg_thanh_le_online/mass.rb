@@ -6,9 +6,6 @@ module TgpsgThanhLeOnline
   class Mass
     class << self
       def all_events(reload_cache: false)
-        cached_key = 'tgpsg_mass_online_videos.json'
-        expired_time = ENV.to_h['HTTP_RESPONSE_EXPIRE'].to_i * 60 # in minutes
-
         TgpsgThanhLeOnline::Caching::Response.fetch(cached_key, reload_cache: reload_cache, expired_time: expired_time) do
           mass = Mass.new
 
@@ -23,6 +20,20 @@ module TgpsgThanhLeOnline
           videos = videos.sort_by { |video| video[:timestamp] }
           videos.reverse
         end
+      end
+
+      private
+
+      def cached_key
+        'tgpsg_mass_online_videos.json'
+      end
+
+      def expired_time
+        short_expired_time = 5 * 60 # 5 minutes
+        current_time = Time.now.getlocal('+07:00').strftime('%H%M').to_i
+        return short_expired_time if current_time >= 1800 && current_time <= 1930
+
+        ENV.to_h['HTTP_RESPONSE_EXPIRE'].to_i * 60 # in minutes
       end
     end
 
