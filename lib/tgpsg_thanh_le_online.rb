@@ -9,6 +9,7 @@ require 'concurrent'
 
 require_relative './tgpsg_thanh_le_online/env'
 require_relative './tgpsg_thanh_le_online/mass'
+require_relative './tgpsg_thanh_le_online/youtube/video_fetcher'
 require_relative './tgpsg_thanh_le_online/youtube_api/base'
 require_relative './tgpsg_thanh_le_online/youtube_api/channel'
 require_relative './tgpsg_thanh_le_online/caching/base'
@@ -27,6 +28,14 @@ def default_headers
 end
 
 def body_builder(event)
+  action = event.dig('queryStringParameters', 'action')
   reload_cache = event.dig('queryStringParameters', 'reload_cache') == 'true'
-  TgpsgThanhLeOnline::Mass.all_events(reload_cache: reload_cache).to_json
+
+  case action
+  when 'video'
+    video_id = event.dig('queryStringParameters', 'video_id')
+    TgpsgThanhLeOnline::Mass.event(video_id).to_json
+  else
+    TgpsgThanhLeOnline::Mass.events(reload_cache: reload_cache).to_json
+  end
 end

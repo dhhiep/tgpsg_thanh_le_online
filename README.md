@@ -3,10 +3,11 @@
 
 This project is a API wrapper for Youtube channel **[TGPSG Thánh Lễ trực tuyến](https://www.youtube.com/channel/UCc7qu2cB-CzTt8CpWqLba-g)** to expose APIs:
 
-| Method | Endpoint                      | Description                                                                                  |
-| ------ | ----------------------------- | -------------------------------------------------------------------------------------------- |
-| GET    | /api/masses                   | List of masses 1 month ago, includes: upcoming, live and streamed (with response caching)    |
-| GET    | /api/masses?reload_cache=true | List of masses 1 month ago, includes: upcoming, live and streamed (without response caching) |
+| Method | Endpoint                                      | Description                                                                                  |
+| ------ | --------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| GET    | /api/masses                                   | List of masses 1 month ago, includes: upcoming, live and streamed (with response caching)    |
+| GET    | /api/masses?reload_cache=true                 | List of masses 1 month ago, includes: upcoming, live and streamed (without response caching) |
+| GET    | /api/masses?action=video&video_id=JeCseNyJD9c | Fetch video data by video ID                                                                 |
 
 ## I. Setup
 

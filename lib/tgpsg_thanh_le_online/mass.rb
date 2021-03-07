@@ -5,7 +5,15 @@
 module TgpsgThanhLeOnline
   class Mass
     class << self
-      def all_events(reload_cache: false)
+      def event(video_id)
+        return {} unless video_id
+
+        Youtube::VideoFetcher.fetch(video_id)
+      rescue
+        {}
+      end
+
+      def events(reload_cache: false)
         TgpsgThanhLeOnline::Caching::Response.fetch(cached_key, reload_cache: reload_cache, expired_time: expired_time) do
           mass = Mass.new
 
