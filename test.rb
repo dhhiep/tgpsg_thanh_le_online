@@ -1,40 +1,19 @@
-require 'open-uri'
-require 'pry'
+# frozen_string_literal: true
+
 require 'json'
+require 'dotenv'
+require 'httparty'
+require 'aws-sdk-s3'
+require 'open-uri'
 require 'concurrent'
 
-def video_published_at(raw_content)
-  published_at = raw_content.match(/"startTimestamp":"(.*)\",\"endTimestamp\"/)
-  published_at ||= raw_content.match(/"startTimestamp":"(.*)\"},\"uploadDate"/)
-  return unless published_at
+require_relative './lib/tgpsg_thanh_le_online/env'
+require_relative './lib/tgpsg_thanh_le_online/mass'
+require_relative './lib/tgpsg_thanh_le_online/youtube/video_fetcher'
+require_relative './lib/tgpsg_thanh_le_online/youtube_api/base'
+require_relative './lib/tgpsg_thanh_le_online/youtube_api/channel'
+require_relative './lib/tgpsg_thanh_le_online/caching/base'
+require_relative './lib/tgpsg_thanh_le_online/caching/response'
+require_relative './lib/tgpsg_thanh_le_online/youtube/videos_upcoming_fetcher'
 
-  Time.parse(published_at[1]).getlocal('+07:00')
-end
-
-def video_end_at(raw_content)
-  stream_end_at = raw_content.match(/"endTimestamp":"(.*)\"},\"uploadDate"/)
-  return unless stream_end_at
-
-  Time.parse(stream_end_at[1]).getlocal('+07:00')
-end
-
-def video_raw_content(url)
-  URI.parse(url).read
-end
-
-list = JSON.parse(URI.open('https://467f3zdo54.execute-api.ap-southeast-1.amazonaws.com/live/api/masses/').read)
-
-futures =
-  list.map do |video|
-    Concurrent::Future.execute do
-      puts "\nStart: #{video['title']} - #{video['url']}"
-      raw_content = video_raw_content(video['url'])
-      video_published_at = video_published_at(raw_content)
-      video_end_at = video_end_at(raw_content)
-      puts "publish_date: #{video_published_at} - video_end_at: #{video_end_at}"
-      [video_published_at, video_end_at]
-    end
-  end
-
-values = futures.map(&:value)
-puts "values: #{values}"
+puts TgpsgThanhLeOnline::Mass.events(reload_cache: true)

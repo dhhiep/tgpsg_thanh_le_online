@@ -11,6 +11,25 @@ module TgpsgThanhLeOnline
       end
 
       def videos(type: 'none', per_page: 15)
+        video_ids_api = video_ids_by_api(type: type, per_page: per_page)
+
+        video_ids =
+          if type == 'upcoming'
+            [video_ids_api, upcoming_video_ids_by_fetcher].flatten.compact.uniq
+          else
+            video_ids_api
+          end
+
+        video_datum_builder(video_ids)
+      end
+
+      private
+
+      def upcoming_video_ids_by_fetcher
+        @upcoming_video_ids_by_fetcher ||= Youtube::VideosUpcomingFetcher.fetch(channel_id)
+      end
+
+      def video_ids_by_api(type: 'none', per_page: 15)
         query_options = {
           part: 'snippet',
           order: 'date',
@@ -21,19 +40,17 @@ module TgpsgThanhLeOnline
         }
 
         videos = search(query_options)
-        video_datum_builder(videos)
+        items = videos.body[:items] || []
+        items.map { |item| item.dig(:id, :videoId) }
       end
 
-      private
-
-      def video_datum_builder(videos)
-        items = videos.body[:items]
-        return [] if items.nil? || items.empty?
+      def video_datum_builder(video_ids)
+        return [] if video_ids.nil? || video_ids.empty?
 
         video_datum =
-          items.map do |item|
+          video_ids.map do |video_id|
             Concurrent::Future.execute do
-              Youtube::VideoFetcher.fetch(item.dig(:id, :videoId))
+              Youtube::VideoFetcher.fetch(video_id)
             end
           end
 
