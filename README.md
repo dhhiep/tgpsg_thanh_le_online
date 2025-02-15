@@ -1,134 +1,61 @@
+# TGPSG Thánh Lễ Trực Tuyến Fetcher  
 
-# TGPSG Thánh Lễ trực tuyến Fetcher
+This project is an API wrapper for the YouTube channel **[TGPSG Thánh Lễ Trực Tuyến](https://www.youtube.com/channel/UCc7qu2cB-CzTt8CpWqLba-g)**, providing the following APIs:  
 
-This project is a API wrapper for Youtube channel **[TGPSG Thánh Lễ trực tuyến](https://www.youtube.com/channel/UCc7qu2cB-CzTt8CpWqLba-g)** to expose APIs:
+| Method | Endpoint                                      | Description                                                                                      |
+| ------ | --------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| GET    | `/api/masses`                                 | Retrieves a list of masses from the past month, including upcoming, live, and streamed (with response caching). |
+| GET    | `/api/masses?reload_cache=true`              | Retrieves a list of masses from the past month, including upcoming, live, and streamed (without response caching). |
+| GET    | `/api/masses?action=video&video_id=JeCseNyJD9c` | Fetches video data by video ID.                                                                  |
 
-| Method | Endpoint                                      | Description                                                                                  |
-| ------ | --------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| GET    | /api/masses                                   | List of masses 1 month ago, includes: upcoming, live and streamed (with response caching)    |
-| GET    | /api/masses?reload_cache=true                 | List of masses 1 month ago, includes: upcoming, live and streamed (without response caching) |
-| GET    | /api/masses?action=video&video_id=JeCseNyJD9c | Fetch video data by video ID                                                                 |
+---
 
 ## I. Setup
 
-#### 1. Copy `.env.template` to `.env` and update your keys.
+### 1. Copy `.env.template` to `.env` and update your keys.
+### 2. Follow these steps to get started:
 
-*Note:* This is current my AWS User permissions. However, I'll double check least permission I need.
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "VisualEditor0",
-      "Effect": "Allow",
-      "Action": [
-        // Permissions is required
-        "iam:CreateRole",
-        "iam:AttachRolePolicy",
-        "apigateway:PUT",
-        "apigateway:POST",
-        "apigateway:GET",
-        "apigateway:TagResource",
-
-        // AWSCloudFormationFullAccess
-        "cloudformation:*",
-
-        // AmazonS3FullAccess
-        "s3:*",
-
-        // AWSLambdaFullAccess
-        "cloudformation:DescribeChangeSet",
-        "cloudformation:DescribeStackResources",
-        "cloudformation:DescribeStacks",
-        "cloudformation:GetTemplate",
-        "cloudformation:ListStackResources",
-        "cloudwatch:*",
-        "cognito-identity:ListIdentityPools",
-        "cognito-sync:GetCognitoEvents",
-        "cognito-sync:SetCognitoEvents",
-        "dynamodb:*",
-        "ec2:DescribeSecurityGroups",
-        "ec2:DescribeSubnets",
-        "ec2:DescribeVpcs",
-        "events:*",
-        "iam:GetPolicy",
-        "iam:GetPolicyVersion",
-        "iam:GetRole",
-        "iam:GetRolePolicy",
-        "iam:ListAttachedRolePolicies",
-        "iam:ListRolePolicies",
-        "iam:ListRoles",
-        "iam:PassRole",
-        "iot:AttachPrincipalPolicy",
-        "iot:AttachThingPrincipal",
-        "iot:CreateKeysAndCertificate",
-        "iot:CreatePolicy",
-        "iot:CreateThing",
-        "iot:CreateTopicRule",
-        "iot:DescribeEndpoint",
-        "iot:GetTopicRule",
-        "iot:ListPolicies",
-        "iot:ListThings",
-        "iot:ListTopicRules",
-        "iot:ReplaceTopicRule",
-        "kinesis:DescribeStream",
-        "kinesis:ListStreams",
-        "kinesis:PutRecord",
-        "kms:ListAliases",
-        "lambda:*",
-        "logs:*",
-        "s3:*",
-        "sns:ListSubscriptions",
-        "sns:ListSubscriptionsByTopic",
-        "sns:ListTopics",
-        "sns:Publish",
-        "sns:Subscribe",
-        "sns:Unsubscribe",
-        "sqs:ListQueues",
-        "sqs:SendMessage",
-        "tag:GetResources",
-        "xray:PutTelemetryRecords",
-        "xray:PutTraceSegments"
-      ],
-      "Resource": "*"
-    }
-  ]
-}
-```
-
-#### 2. Follow these steps to get started
-
-```shell
+```bash
 $ ./bin/bootstrap
 $ ./bin/setup
 $ ./bin/test
 ```
 
-To deploy your Lambda do the following. This command assumes you have the AWS CLI configured with credentials located within your `~/.aws` directory.
+To deploy your Lambda function, follow these steps. This command assumes you have the AWS CLI configured with credentials located in your `~/.aws` directory.
 
 ```shell
 $ STAGE_ENV=live ./bin/deploy
 ```
 
-To test it works within the AWS Console, you can either send it a test event (Services -> Lambda -> MYLAMBDA -> Test) or if you opted for a basic HTTP API, you can see your Invoke URL by navigating to (Services -> API Gateway -> MYAPI -> Invoke URL) page.
+To test its functionality within the AWS Console, you can either:
+- Send a test event:  
+  **Services -> Lambda -> MYLAMBDA -> Test**
+- If you opted for a basic HTTP API, check your Invoke URL by navigating to:  
+  **Services -> API Gateway -> MYAPI -> Invoke URL**
+
+---
 
 ## II. CI/CD with GitHub Actions
 
-In order for GitHub to deploy your Lambda, it will need permission to do so. An admin should do the first deploy, however afterward GitHub Actions can do updates for you.
+For GitHub to deploy your Lambda function, it needs permission to do so. An admin should perform the first deployment. Afterward, GitHub Actions can handle updates automatically.
 
-#### Create a Deploy User
+### 1. Create a Deploy User
 
-In the AWS Console -> IAM -> Users -> Add User.
+In the AWS Console:  
+**IAM -> Users -> Add User**
 
-* Check "Programmatic access" option.
-* Select "Attach existing policies directly" option.
-* Select "AWSLambdaFullAccess" policy.
-* Copy the "Access key ID" and "Secret access key"
+- Check the **"Programmatic access"** option.
+- Select **"Attach existing policies directly"**.
+- Select the **"AWSLambdaFullAccess"** policy.
+- Copy the **Access Key ID** and **Secret Access Key**.
 
-#### AWS Credentials
+### 2. AWS Credentials
 
-In your GitHub repo page. Click Settings -> Secrets -> Add a new secret
+In your GitHub repository:
 
-* Name `AWS_ACCESS_KEY_ID` value (from step above)
-* Name `AWS_SECRET_ACCESS_KEY` value (from step above)
+- Go to **Settings -> Secrets -> Add a new secret**.
+- Add the following secrets:
+  - **Name:** `AWS_ACCESS_KEY_ID`  
+    **Value:** *(Paste the Access Key ID from the previous step)*
+  - **Name:** `AWS_SECRET_ACCESS_KEY`  
+    **Value:** *(Paste the Secret Access Key from the previous step)*
